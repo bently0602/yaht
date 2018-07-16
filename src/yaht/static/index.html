@@ -1,0 +1,168 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" href="static/codemirror/lib/codemirror.css">
+	<link rel="stylesheet" href="static/codemirror/addon/dialog/dialog.css">
+	<script src="static/codemirror/lib/codemirror.js"></script>
+	<script src="static/codemirror/mode/javascript/javascript.js"></script>
+	<script src="static/codemirror/addon/edit/matchbrackets.js"></script>
+	<script src="static/codemirror/addon/comment/continuecomment.js"></script>
+	<script src="static/codemirror/addon/comment/comment.js"></script>
+	<script src="static/codemirror/addon/dialog/dialog.js"></script>
+	<style>
+		html, body, #code {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			width: 100%;
+		}
+		.CodeMirror {
+			height: 100%;
+			width: 100%;
+		}
+		#save {
+			position: fixed;
+			right: 0;
+			top: 0;
+			margin-right: 2em;
+			margin-top: 1em;
+			z-index: 9999;
+			font-size: 1.3em;			
+		}
+		#load {
+			position: fixed;
+			right: 0;
+			top: 0;
+			margin-right: 2em;
+			margin-top: 3em;
+			z-index: 9999;
+			font-size: 1.3em;			
+		}
+		#totpgenerate {
+			position: fixed;
+			right: 0;
+			top: 0;
+			margin-right: 2em;
+			margin-top: 5em;
+			z-index: 9999;
+			font-size: 1.3em;			
+		}
+	</style>
+</head>
+<body>
+	<button id="save" onclick="save()">Save (Cntl-s)</button>
+	<button id="load" onclick="load()">Load (Cntl-r)</button>
+	<button id="totpgenerate" onclick="totpGenerate()">TOTP Generate</button>
+	<textarea id="code"></textarea>
+	<script>
+		var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+			matchBrackets: true,
+			autoCloseBrackets: true,
+			mode: "application/ld+json",
+			lineWrapping: true,
+			extraKeys: {
+				"Ctrl-R": load,
+				"Ctrl-S": save
+			}			
+		});
+
+		function totpGenerate() {
+			var name = prompt('Generate a TOTP for what account name?');
+			if (name == null) {
+				return;
+			}
+			var httpRequest = new XMLHttpRequest();
+			if (!httpRequest) {
+				alert('Giving up :( Cannot create an XMLHTTP instance');
+				return false;
+			}
+			httpRequest.onreadystatechange = function () {
+				if (httpRequest.readyState === XMLHttpRequest.DONE) {
+					if (httpRequest.status === 200) {
+						var src = JSON.parse(httpRequest.responseText);
+						if (src.success) {
+							editor.openDialog([
+								'<b>' + src.secret + '</b>', 
+								'<br />',
+								'<img style="height: 240px;" src="data:image/png;base64, ' + src.qrCode + '" alt="Red dot" />',
+								'<button>Close</button>'
+							].join('\n'), function () {}, {
+								closeOnEnter: false,
+								closeOnBlur: false
+							});
+						} else {
+							editor.openNotification('There was a problem with the request.');
+						}						
+					} else {
+						alert('There was a problem with the request.');
+					}
+				}
+			};
+			httpRequest.open('POST', 'generatetotp');
+			httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			httpRequest.send('name=' + encodeURIComponent(name));
+		}
+
+		function load() {
+			var httpRequest = new XMLHttpRequest();
+			if (!httpRequest) {
+				editor.openNotification('Giving up :( Cannot create an XMLHTTP instance');
+				return false;
+			}
+			httpRequest.onreadystatechange = function () {
+				if (httpRequest.readyState === XMLHttpRequest.DONE) {
+					if (httpRequest.status === 200) {
+						var src = JSON.parse(httpRequest.responseText);
+						editor.setValue(JSON.stringify(src, null, "\t"));
+						setTimeout(function() {
+							editor.refresh();
+						}, 1);						
+					} else {
+						editor.openNotification('There was a problem with the request.');
+					}
+				}
+			};
+			httpRequest.open('GET', 'load');
+			httpRequest.send();
+		}
+
+		function save() {
+			var httpRequest = new XMLHttpRequest();
+			if (!httpRequest) {
+				editor.openNotification('Giving up :( Cannot create an XMLHTTP instance');
+				return false;
+			}			
+			httpRequest.onreadystatechange =  function () {
+				if (httpRequest.readyState === XMLHttpRequest.DONE) {
+					if (httpRequest.status === 200) {
+						var src = JSON.parse(httpRequest.responseText);
+						if (src.success) {
+							editor.openNotification('Config file saved successfuly.');
+						} else {
+							editor.openNotification('Error saving config file!');
+						}					
+					} else {
+						editor.openNotification('There was a problem with the request.');
+					}
+				}
+			};
+			httpRequest.open('POST', 'save');
+			httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			httpRequest.send('config_source=' + encodeURIComponent(editor.getValue('\n')));
+		}
+
+		load();
+
+		document.onkeypress = function (event) {
+			var key = event.keyCode;
+			if (event.ctrlKey) {
+				if (key === ('R').charCodeAt(0) - 64) load();
+				if (key === ('S').charCodeAt(0) - 64) save();
+			}
+		}		
+	</script>
+</body>
+</html>

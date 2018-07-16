@@ -1,0 +1,22 @@
+{
+	"instanceName": "yaht",
+	"shutdownOnConfigChange": false,
+	"adminWeb": {
+		"port": 8080
+	},
+	"ssh": {
+		"port": 2222,
+		"idleTimeoutMinutes": 30,
+		"deadTimeoutMinutes": 60,
+		"heartbeatSeconds": 5
+	},
+	"users": {
+		"test": {
+			"authType": "password",
+			"value": "password",
+			"routes": [
+				"127.0.0.1:8000"
+			]
+		}
+	}
+}

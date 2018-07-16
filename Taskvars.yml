@@ -1,0 +1,10 @@
+# BINARY_NAME is the same as PACKAGE_NAME for go build
+BINARY_NAME: yaht
+
+# each dep for go get on a new line
+# git, hg, whatever will need to be on path
+DEPS: |
+  github.com/golang/example/hello
+  github.com/gliderlabs/ssh
+  github.com/spf13/viper
+  github.com/sec51/twofactor
