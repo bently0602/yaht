@@ -1,0 +1,30 @@
+{
+	"instanceName": "yaht",
+	"shutdownOnConfigChange": false,
+	"adminWeb": {
+		"port": 8080
+	},
+	"ssh": {
+		"port": 2222,
+		"idleTimeoutMinutes": 30,
+		"deadTimeoutMinutes": 60,
+		"heartbeatSeconds": 5
+	},
+	"users": {
+		"test": {
+			"authType": "password",
+			"value": "password",
+			"routes": [
+				"127.0.0.1:8000"
+			]
+		},
+		"testtotp": {
+			"authType": "password+totp",
+			"value": "password",
+			"totpToken": "jAAAAAAAAADVBBYooYhRZSmvSsdajT9UxbtzfhWt5t3cnteHoeHJ9fZKmeKqlRj6CMK26iMHQPXVuqm/MTuw/4OUJNZKanJNZZQFz6Ri17YqqVcZ5Ja2Iwi7fVIxPyw41NcuIGS0k9p40BZchR9bzxz9X58G28m7hN0xD+R3/NTHbhyEOyFnVBeNuuQ=",
+			"routes": [
+				"127.0.0.1:8000"
+			]
+		}
+	}
+}

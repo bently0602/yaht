@@ -1,0 +1,67 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Yaht</title>
+  <script src="web/showdown.js"></script>
+  <style>
+    html, body {
+      padding: 0px;
+      margin: 0px;
+      width: 100%;
+      height: 100%;
+      max-width: 960px;
+    }
+    body {
+      word-wrap: break-word;
+    }
+    h1, h2, h3, h4, h5, img, p {
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+    h1, h2, h3, h4, h5 {
+      font-family: Serif;
+    }
+    p {
+      font-family: Sans-Serif;
+    }
+    pre {
+      margin: 1em auto 1em;
+      width: 90%;
+      overflow: auto;
+      padding: 0px;
+    }
+  </style>
+<script>
+function ready(callback){
+  // in case the document is already rendered
+  if (document.readyState!='loading') callback();
+  // modern browsers
+  else if (document.addEventListener) document.addEventListener('DOMContentLoaded', callback);
+  // IE <= 8
+  else document.attachEvent('onreadystatechange', function(){
+      if (document.readyState == 'complete') callback();
+  });
+}
+
+ready(function(){
+  var httpRequest = new XMLHttpRequest();
+  httpRequest.responseType = 'text';
+  httpRequest.onreadystatechange = function () {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      if (httpRequest.status === 200) {
+        var otp = document.body,
+            conv = new showdown.Converter();
+        otp.innerHTML = conv.makeHtml(httpRequest.responseText);   
+      } else { }
+    }
+  };
+  httpRequest.open('GET', 'README.md');
+  httpRequest.send();
+});
+</script>
+</head>
+<body>
+</body>
+</html>
