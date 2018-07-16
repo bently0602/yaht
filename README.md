@@ -1,4 +1,4 @@
-<img style="width:240px;" src="docs/yaht.png" alt="yaht"/>
+<img style="width:240px;" src="web/yaht.png" alt="yaht"/>
 
 ## What is Yaht
 
