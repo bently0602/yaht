@@ -1,8 +1,8 @@
-<img style="width:240px;" src="web/yaht.png" alt="yaht"/>
+<img style="width:240px;" src="docs/yaht.png" alt="yaht"/>
 
 ## What is Yaht
 
-This is a small utility to serve only ssh proxy requests. It is configurable to only allow specific ports to be proxied and allows users to use password and password + one time authentication (google authenticator, etc...).
+Yaht is a small utility to serve only ssh proxy requests. It is configurable to only allow specific ports to be proxied and allows users to use password and password + one time authentication (google authenticator, etc...).
 Its a self contained program that is compiles across different platforms since it's written using Go. There is also a web configuration front end that allows someone to modify the configuration file over a web browser.
 
 ## How to Start
@@ -37,6 +37,10 @@ To setup users password and password+totp authentication is available. To get a 
 }
 ```
 
+## Setup over Web
+
+A web front end is available that allows you to generate totp tokens and barcodes for scanning in google authenticator. It allows you to edit the configuration file as well. There is no authentication on it so make sure the proper ports are blocked. By default, the web frontend is started on port 8080.
+
 ## Using
 
 Use ssh to login to the server like normal, passing in local port forwarding options:
@@ -46,16 +50,23 @@ ssh -L 8888:127.0.0.1:8000 testtotp@127.0.0.1 -p 2222
 ```
 
 When it prompts for a password:
-	1. Use just your password if authType = password for user
-	2. if authType = password+totp, use the password and token with a space between them.
-		for example use testtotp for above, "password 12345678"
-		note there is no space between the totp segemnts so 1234 5678 would be 12345678
+1. Use just your password if authType = password for user
+2. if authType = password+totp, use the password and token with a space between them.
+	for example use testtotp for above, "password 12345678"
+	note there is no space between the totp segemnts so 1234 5678 would be 12345678
 
 ## Testing Out
 
+Start up a python web server in a terminal (default port for the following command is 8000):
+
 ```
 python -m http.server
-
-ssh -L 8888:127.0.0.1:8000 testtotp@127.0.0.1 -p 2222\
 ```
 
+Then start yaht proxy.
+
+Then run the following SSH command:
+
+```
+ssh -L 8888:127.0.0.1:8000 testtotp@127.0.0.1 -p 2222
+```
