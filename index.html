@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <title>Yaht</title>
-  <script src="web/showdown.js"></script>
+  <script src="showdown.js"></script>
   <style>
     html, body {
       padding: 0px;
@@ -57,7 +57,7 @@ ready(function(){
       } else { }
     }
   };
-  httpRequest.open('GET', 'README.md');
+  httpRequest.open('GET', 'https://raw.githubusercontent.com/bently0602/yaht/master/README.md');
   httpRequest.send();
 });
 </script>
